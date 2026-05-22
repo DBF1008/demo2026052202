@@ -2,14 +2,11 @@ package test
 
 import (
 	"ginskeleton/app/global/variable"
-	_ "ginskeleton/bootstrap" //  为了保证单元测试与正常启动效果一致，记得引入该包
+	_ "ginskeleton/bootstrap"
 	"github.com/qifengzhang007/goCurl"
 	"testing"
 )
 
-// goCurl 更详细的使用文档 https://gitee.com/daitougege/goCurl
-
-// 一个简单的get请求
 func TestHttpClient(t *testing.T) {
 	cli := goCurl.CreateHttpClient()
 	if resp, err := cli.Get("http://hq.sinajs.cn/list=sh601360"); err == nil {
@@ -21,7 +18,6 @@ func TestHttpClient(t *testing.T) {
 	}
 }
 
-// 向门户服务接口请求，用于收集cpu占用情况。
 func TestPprof(t *testing.T) {
 	cli := goCurl.CreateHttpClient()
 	for i := 1; i <= 500; i++ {
@@ -35,7 +31,7 @@ func TestPprof(t *testing.T) {
 		if err == nil {
 			if txt, err := resp.GetContents(); err == nil {
 				if i == 500 {
-					//最后一次输出返回结果，避免中间过程频繁操作io
+
 					variable.ZapLog.Info(txt)
 				}
 			}

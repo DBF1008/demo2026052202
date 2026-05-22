@@ -16,28 +16,24 @@ import (
 	"time"
 )
 
-// 获取一个 mysql 客户端
 func GetOneMysqlClient() (*gorm.DB, error) {
 	sqlType := "Mysql"
 	readDbIsOpen := variable.ConfigGormv2Yml.GetInt("Gormv2." + sqlType + ".IsOpenReadDb")
 	return GetSqlDriver(sqlType, readDbIsOpen)
 }
 
-// 获取一个 sqlserver 客户端
 func GetOneSqlserverClient() (*gorm.DB, error) {
 	sqlType := "SqlServer"
 	readDbIsOpen := variable.ConfigGormv2Yml.GetInt("Gormv2." + sqlType + ".IsOpenReadDb")
 	return GetSqlDriver(sqlType, readDbIsOpen)
 }
 
-// 获取一个 postgresql 客户端
 func GetOnePostgreSqlClient() (*gorm.DB, error) {
 	sqlType := "Postgresql"
 	readDbIsOpen := variable.ConfigGormv2Yml.GetInt("Gormv2." + sqlType + ".IsOpenReadDb")
 	return GetSqlDriver(sqlType, readDbIsOpen)
 }
 
-// 获取数据库驱动, 可以通过options 动态参数连接任意多个数据库
 func GetSqlDriver(sqlType string, readDbIsOpen int, dbConf ...ConfigParams) (*gorm.DB, error) {
 
 	var dbDialector gorm.Dialector
@@ -49,15 +45,13 @@ func GetSqlDriver(sqlType string, readDbIsOpen int, dbConf ...ConfigParams) (*go
 	gormDb, err := gorm.Open(dbDialector, &gorm.Config{
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,
-		Logger:                 redefineLog(sqlType), //拦截、接管 gorm v2 自带日志
+		Logger:                 redefineLog(sqlType),
 	})
 	if err != nil {
-		//gorm 数据库驱动初始化失败
+
 		return nil, err
 	}
 
-	// 如果开启了读写分离，配置读数据库（resource、read、replicas）
-	// 读写分离配置只
 	if readDbIsOpen == 1 {
 		if val, err := getDbDialector(sqlType, "Read", dbConf...); err != nil {
 			variable.ZapLog.Error(my_errors.ErrorsDialectorDbInitFail+sqlType, zap.Error(err))
@@ -65,8 +59,8 @@ func GetSqlDriver(sqlType string, readDbIsOpen int, dbConf ...ConfigParams) (*go
 			dbDialector = val
 		}
 		resolverConf := dbresolver.Config{
-			Replicas: []gorm.Dialector{dbDialector}, //  读 操作库，查询类
-			Policy:   dbresolver.RandomPolicy{},     // sources/replicas 负载均衡策略适用于
+			Replicas: []gorm.Dialector{dbDialector},
+			Policy:   dbresolver.RandomPolicy{},
 		}
 		err = gormDb.Use(dbresolver.Register(resolverConf).SetConnMaxIdleTime(time.Second * 30).
 			SetConnMaxLifetime(variable.ConfigGormv2Yml.GetDuration("Gormv2."+sqlType+".Read.SetConnMaxLifetime") * time.Second).
@@ -77,16 +71,12 @@ func GetSqlDriver(sqlType string, readDbIsOpen int, dbConf ...ConfigParams) (*go
 		}
 	}
 
-	// 查询没有数据，屏蔽 gorm v2 包中会爆出的错误
-	// https://github.com/go-gorm/gorm/issues/3789  此 issue 所反映的问题就是我们本次解决掉的
 	_ = gormDb.Callback().Query().Before("gorm:query").Register("disable_raise_record_not_found", MaskNotDataError)
 
-	// https://github.com/go-gorm/gorm/issues/4838
 	_ = gormDb.Callback().Create().Before("gorm:before_create").Register("CreateBeforeHook", CreateBeforeHook)
-	// 为了完美支持gorm的一系列回调函数
+
 	_ = gormDb.Callback().Update().Before("gorm:before_update").Register("UpdateBeforeHook", UpdateBeforeHook)
 
-	// 为主连接设置连接池(43行返回的数据库驱动指针)
 	if rawDb, err := gormDb.DB(); err != nil {
 		return nil, err
 	} else {
@@ -94,7 +84,7 @@ func GetSqlDriver(sqlType string, readDbIsOpen int, dbConf ...ConfigParams) (*go
 		rawDb.SetConnMaxLifetime(variable.ConfigGormv2Yml.GetDuration("Gormv2."+sqlType+".Write.SetConnMaxLifetime") * time.Second)
 		rawDb.SetMaxIdleConns(variable.ConfigGormv2Yml.GetInt("Gormv2." + sqlType + ".Write.SetMaxIdleConns"))
 		rawDb.SetMaxOpenConns(variable.ConfigGormv2Yml.GetInt("Gormv2." + sqlType + ".Write.SetMaxOpenConns"))
-		// 全局sql的debug配置
+
 		if variable.ConfigGormv2Yml.GetBool("Gormv2.SqlDebug") {
 			return gormDb.Debug(), nil
 		} else {
@@ -103,7 +93,6 @@ func GetSqlDriver(sqlType string, readDbIsOpen int, dbConf ...ConfigParams) (*go
 	}
 }
 
-// 获取一个数据库方言(Dialector),通俗的说就是根据不同的连接参数，获取具体的一类数据库的连接指针
 func getDbDialector(sqlType, readWrite string, dbConf ...ConfigParams) (gorm.Dialector, error) {
 	var dbDialector gorm.Dialector
 	dsn := getDsn(sqlType, readWrite, dbConf...)
@@ -120,7 +109,6 @@ func getDbDialector(sqlType, readWrite string, dbConf ...ConfigParams) (gorm.Dia
 	return dbDialector, nil
 }
 
-// 根据配置参数生成数据库驱动 dsn
 func getDsn(sqlType, readWrite string, dbConf ...ConfigParams) string {
 	Host := variable.ConfigGormv2Yml.GetString("Gormv2." + sqlType + "." + readWrite + ".Host")
 	DataBase := variable.ConfigGormv2Yml.GetString("Gormv2." + sqlType + "." + readWrite + ".DataBase")
@@ -182,7 +170,6 @@ func getDsn(sqlType, readWrite string, dbConf ...ConfigParams) string {
 	return ""
 }
 
-// 创建自定义日志模块，对 gorm 日志进行拦截、
 func redefineLog(sqlType string) gormLog.Interface {
 	return createCustomGormLog(sqlType,
 		SetInfoStrFormat("[info] %s\n"), SetWarnStrFormat("[warn] %s\n"), SetErrStrFormat("[error] %s\n"),

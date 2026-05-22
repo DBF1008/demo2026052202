@@ -6,12 +6,11 @@ import (
 )
 
 type StuService struct {
-	// 定义一个测试函方法
+
 }
 
 func (u *StuService) GetStudentInfo(ctx context.Context, req *stu_demo_pb.StudentRequest) (resp *stu_demo_pb.StudentResponse, err error) {
 
-	// 这里直接返回固定的数据，快速演示 grpc-service 功能即可
 	resp = &stu_demo_pb.StudentResponse{
 		Code: 200,
 		Msg:  "success",

@@ -10,8 +10,7 @@ import (
 )
 
 func TestGrpcClient1(t *testing.T) {
-	//连接到gRPC服务端
-	// err 永远返回 nil ，没有判断的必要
+
 	conn, err := grpc.NewClient("127.0.0.1:20211", grpc.WithInsecure())
 	defer conn.Close()
 
@@ -28,7 +27,7 @@ func TestGrpcClient1(t *testing.T) {
 }
 
 func TestGrpcClient2(t *testing.T) {
-	//连接到gRPC服务端
+
 	conn, err := grpc.NewClient("127.0.0.1:20211", grpc.WithInsecure())
 	defer conn.Close()
 
@@ -48,7 +47,7 @@ func TestGrpcClient2(t *testing.T) {
 }
 
 func TestGrpcClient3(t *testing.T) {
-	//连接到gRPC服务端
+
 	conn, err := grpc.NewClient("127.0.0.1:20211", grpc.WithInsecure())
 	defer conn.Close()
 

@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// 创建一个雪花算法生成器(生成工厂)
 func CreateSnowflakeFactory() snowflake_interf.InterfaceSnowFlake {
 	return &snowflake{
 		timestamp: 0,
@@ -24,7 +23,6 @@ type snowflake struct {
 	sequence  int64
 }
 
-// 生成分布式ID
 func (s *snowflake) GetId() int64 {
 	s.Lock()
 	defer func() {

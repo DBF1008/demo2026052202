@@ -36,12 +36,12 @@ func GrpcRequestLog() grpc.UnaryServerInterceptor {
 				zap.Error(err),
 			)
 		} else {
-			//respJson, _ := protojson.Marshal(resp.(proto.Message))
+
 			variable.ZapLog.Info("grpc - ",
 				zap.String("method", info.FullMethod),
 				zap.String("client_ip", clientIP),
 				zap.String("request", string(reqJson)),
-				//zap.String("response", string(respJson)),
+
 				zap.Int64("cost_ms", costTime),
 			)
 		}

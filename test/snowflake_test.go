@@ -7,10 +7,8 @@ import (
 	"testing"
 )
 
-// 雪花算法单元测试
-
 func TestSnowFlake(t *testing.T) {
-	// 并发 3万 测试，实际业务场景中，并发是不可能达到 3万 这个值的
+
 	var slice1 []int64
 	var vMuext sync.Mutex
 	var wg sync.WaitGroup
@@ -19,12 +17,11 @@ func TestSnowFlake(t *testing.T) {
 	for i := 1; i <= 30000; i++ {
 		go func() {
 			defer wg.Done()
-			//加锁操作主要是为了保证切片（[]int64）的并发安全，
-			//我们本次测试的核心目的是雪花算法生成的ID必须是唯一的
+
 			vMuext.Lock()
 			slice1 = append(slice1, variable.SnowFlake.GetId())
 			vMuext.Unlock()
-			//fmt.Printf("%d\n", variable.SnowFlake.GetId())
+
 		}()
 	}
 
@@ -37,7 +34,6 @@ func TestSnowFlake(t *testing.T) {
 	}
 }
 
-// 切片去重
 func RemoveRepeatedElement(arr []int64) (newArr []int64) {
 	newArr = make([]int64, 0)
 	for i := 0; i < len(arr); i++ {

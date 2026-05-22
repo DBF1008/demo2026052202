@@ -1,11 +1,11 @@
 package core
 
 type Hub struct {
-	//上线注册
+
 	Register chan *Client
-	//下线注销
+
 	UnRegister chan *Client
-	//所有在线客户端的内存地址
+
 	Clients map[*Client]bool
 }
 

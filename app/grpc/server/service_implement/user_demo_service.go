@@ -12,7 +12,7 @@ import (
 )
 
 type UserService struct {
-	// 定义一个测试函方法
+
 }
 
 func (u *UserService) GetUserInfo(ctx context.Context, req *user_demo_pb.UserRequest) (resp *user_demo_pb.UserResponse, err error) {
@@ -26,32 +26,32 @@ func (u *UserService) GetUserInfo(ctx context.Context, req *user_demo_pb.UserReq
 			&user_demo_pb.Data2{
 				OneItem: map[string]*anypb.Any{
 					"user_name": {
-						TypeUrl: "type.googleapis.com/google.protobuf.StringValue", // 指定消息类型的 URL
-						Value:   []byte("zhangsan001"),                             // 存储编码后的消息字节流
+						TypeUrl: "type.googleapis.com/google.protobuf.StringValue",
+						Value:   []byte("zhangsan001"),
 					},
 					"age": {
-						TypeUrl: "type.googleapis.com/google.protobuf.Int32Value", // 指定消息类型的 URL
-						Value:   []byte("18"),                                     // 存储编码后的消息字节流
+						TypeUrl: "type.googleapis.com/google.protobuf.Int32Value",
+						Value:   []byte("18"),
 					},
 					"real_name": {
-						TypeUrl: "type.googleapis.com/google.protobuf.StringValue", // 指定消息类型的 URL
-						Value:   []byte("张三2026"),                                  // 存储编码后的消息字节流
+						TypeUrl: "type.googleapis.com/google.protobuf.StringValue",
+						Value:   []byte("张三2026"),
 					},
 				},
 			},
 			&user_demo_pb.Data2{
 				OneItem: map[string]*anypb.Any{
 					"user_name": {
-						TypeUrl: "type.googleapis.com/google.protobuf.StringValue", // 指定消息类型的 URL
-						Value:   []byte("lisi002"),                                 // 存储编码后的消息字节流
+						TypeUrl: "type.googleapis.com/google.protobuf.StringValue",
+						Value:   []byte("lisi002"),
 					},
 					"age": {
-						TypeUrl: "type.googleapis.com/google.protobuf.Int32Value", // 指定消息类型的 URL
-						Value:   []byte("19"),                                     // 存储编码后的消息字节流
+						TypeUrl: "type.googleapis.com/google.protobuf.Int32Value",
+						Value:   []byte("19"),
 					},
 					"real_name": {
-						TypeUrl: "type.googleapis.com/google.protobuf.StringValue", // 指定消息类型的 URL
-						Value:   []byte("李四2026"),                                  // 存储编码后的消息字节流
+						TypeUrl: "type.googleapis.com/google.protobuf.StringValue",
+						Value:   []byte("李四2026"),
 					},
 				},
 			},
@@ -72,16 +72,16 @@ func (u *UserService) GetItem(ctx context.Context, req *user_demo_pb.UserIdReque
 			&user_demo_pb.Data2{
 				OneItem: map[string]*anypb.Any{
 					"user_name": {
-						TypeUrl: "type.googleapis.com/google.protobuf.StringValue", // 指定消息类型的 URL
-						Value:   []byte("zhangsan"),                                // 存储编码后的消息字节流
+						TypeUrl: "type.googleapis.com/google.protobuf.StringValue",
+						Value:   []byte("zhangsan"),
 					},
 					"age": {
-						TypeUrl: "type.googleapis.com/google.protobuf.Int32Value", // 指定消息类型的 URL
-						Value:   []byte("18"),                                     // 存储编码后的消息字节流
+						TypeUrl: "type.googleapis.com/google.protobuf.Int32Value",
+						Value:   []byte("18"),
 					},
 					"real_name": {
-						TypeUrl: "type.googleapis.com/google.protobuf.StringValue", // 指定消息类型的 URL
-						Value:   []byte("张三2026"),                                  // 存储编码后的消息字节流
+						TypeUrl: "type.googleapis.com/google.protobuf.StringValue",
+						Value:   []byte("张三2026"),
 					},
 				},
 			},

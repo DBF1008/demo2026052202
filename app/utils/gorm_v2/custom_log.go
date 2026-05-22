@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-// 自定义日志格式, 对 gorm 自带日志进行拦截重写
 func createCustomGormLog(sqlType string, options ...Options) gormLog.Interface {
 	var (
 		infoStr      = "%s\n[info] "
@@ -59,7 +58,6 @@ func (l logOutPut) Printf(strFormat string, args ...interface{}) {
 
 }
 
-// 尝试从外部重写内部相关的格式化变量
 type Options interface {
 	apply(*logger)
 }
@@ -69,7 +67,6 @@ func (f OptionFunc) apply(log *logger) {
 	f(log)
 }
 
-// 定义 6 个函数修改内部变量
 func SetInfoStrFormat(format string) Options {
 	return OptionFunc(func(log *logger) {
 		log.infoStr = format
@@ -112,35 +109,30 @@ type logger struct {
 	traceStr, traceErrStr, traceWarnStr string
 }
 
-// LogMode log mode
 func (l *logger) LogMode(level gormLog.LogLevel) gormLog.Interface {
 	newlogger := *l
 	newlogger.LogLevel = level
 	return &newlogger
 }
 
-// Info print info
 func (l logger) Info(_ context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= gormLog.Info {
 		l.Printf(l.infoStr+msg, append([]interface{}{utils.FileWithLineNum()}, data...)...)
 	}
 }
 
-// Warn print warn messages
 func (l logger) Warn(_ context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= gormLog.Warn {
 		l.Printf(l.warnStr+msg, append([]interface{}{utils.FileWithLineNum()}, data...)...)
 	}
 }
 
-// Error print error messages
 func (l logger) Error(_ context.Context, msg string, data ...interface{}) {
 	if l.LogLevel >= gormLog.Error {
 		l.Printf(l.errStr+msg, append([]interface{}{utils.FileWithLineNum()}, data...)...)
 	}
 }
 
-// Trace print sql message
 func (l logger) Trace(_ context.Context, begin time.Time, fc func() (string, int64), err error) {
 	if l.LogLevel <= gormLog.Silent {
 		return

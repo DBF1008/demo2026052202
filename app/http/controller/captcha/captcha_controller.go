@@ -14,9 +14,8 @@ import (
 
 type Captcha struct{}
 
-// 生成验证码ID
 func (c *Captcha) GenerateId(context *gin.Context) {
-	// 设置验证码的数字长度（个数）
+
 	var length = variable.ConfigYml.GetInt("Captcha.length")
 	var captchaId, imgUrl, refresh, verify string
 
@@ -34,7 +33,6 @@ func (c *Captcha) GenerateId(context *gin.Context) {
 
 }
 
-// 获取验证码图像
 func (c *Captcha) GetImg(context *gin.Context) {
 	captchaIdKey := variable.ConfigYml.GetString("Captcha.captchaId")
 	captchaId := context.Param(captchaIdKey)
@@ -57,13 +55,12 @@ func (c *Captcha) GetImg(context *gin.Context) {
 	var vBytes bytes.Buffer
 	if ext == ".png" {
 		context.Header("Content-Type", "image/png")
-		// 设置实际业务需要的验证码图片尺寸（宽 X 高），captcha.StdWidth, captcha.StdHeight 为默认值，请自行修改为具体数字即可
+
 		_ = captcha.WriteImage(&vBytes, id, captcha.StdWidth, captcha.StdHeight)
 		http.ServeContent(context.Writer, context.Request, id+ext, time.Time{}, bytes.NewReader(vBytes.Bytes()))
 	}
 }
 
-// 校验验证码
 func (c *Captcha) CheckCode(context *gin.Context) {
 	captchaIdKey := variable.ConfigYml.GetString("Captcha.captchaId")
 	captchaValueKey := variable.ConfigYml.GetString("Captcha.captchaValue")

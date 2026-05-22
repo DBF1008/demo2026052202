@@ -16,11 +16,6 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-//  消息队列（rabbitmq）在线文档地址：https://www.yuque.com/xiaofensinixidaouxiang/bkfhct/tkcuc8
-// 延迟消息队列在线文档地址：https://www.yuque.com/xiaofensinixidaouxiang/bkfhct/grroyv
-// 本篇的单元测试提供的是非延迟消息队列的测试，只要学会单元测试提供的示例，延迟队列也是非常简单的，参考在线文档即可
-
-// 1.HelloWorld 模式
 func TestRabbitMqHelloWorldProducer(t *testing.T) {
 
 	helloProducer, err := hello_world.CreateProducer()
@@ -32,11 +27,11 @@ func TestRabbitMqHelloWorldProducer(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		str := fmt.Sprintf("%d_HelloWorld开始发送消息测试", i+1)
 		res = helloProducer.Send(str)
-		//time.Sleep(time.Second * 1)
+
 	}
 
-	helloProducer.Close() // 消息投递结束，必须关闭连接
-	// 总共发送了10条消息，我们简单判断一下最后一条消息返回的结果
+	helloProducer.Close()
+
 	if res {
 		t.Log("消息发送OK")
 	} else {
@@ -44,7 +39,6 @@ func TestRabbitMqHelloWorldProducer(t *testing.T) {
 	}
 }
 
-// 消费者
 func TestMqHelloWorldConsumer(t *testing.T) {
 
 	consumer, err := hello_world.CreateConsumer()
@@ -63,7 +57,6 @@ func TestMqHelloWorldConsumer(t *testing.T) {
 	})
 }
 
-// 2.WorkQueue模式
 func TestRabbitMqWorkQueueProducer(t *testing.T) {
 
 	producer, _ := work_queue.CreateProducer()
@@ -71,10 +64,10 @@ func TestRabbitMqWorkQueueProducer(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		str := fmt.Sprintf("%d_WorkQueue开始发送消息测试", i+1)
 		res = producer.Send(str)
-		//time.Sleep(time.Second * 1)
+
 	}
 
-	producer.Close() // 消息投递结束，必须关闭连接
+	producer.Close()
 
 	if res {
 		t.Logf("消息发送OK")
@@ -83,7 +76,6 @@ func TestRabbitMqWorkQueueProducer(t *testing.T) {
 	}
 }
 
-// 消费者
 func TestMqWorkQueueConsumer(t *testing.T) {
 
 	consumer, err := work_queue.CreateConsumer()
@@ -102,7 +94,6 @@ func TestMqWorkQueueConsumer(t *testing.T) {
 	})
 }
 
-// 3.PublishSubscribe 发布、订阅模式模式
 func TestRabbitMqPublishSubscribeProducer(t *testing.T) {
 
 	producer, err := publish_subscribe.CreateProducer()
@@ -113,13 +104,13 @@ func TestRabbitMqPublishSubscribeProducer(t *testing.T) {
 	var res bool
 	for i := 0; i < 10; i++ {
 		str := fmt.Sprintf("%d_PublishSubscribe开始发送消息测试", i+1)
-		// 参数二： 消息延迟的毫秒数，只有创建的对象是延迟模式该参数才有效
+
 		res = producer.Send(str, 1000)
 		fmt.Println(str, res)
-		//time.Sleep(time.Second * 2)
+
 	}
 
-	producer.Close() // 消息投递结束，必须关闭连接
+	producer.Close()
 
 	if res {
 		t.Log("消息发送OK")
@@ -128,7 +119,6 @@ func TestRabbitMqPublishSubscribeProducer(t *testing.T) {
 	}
 }
 
-// 消费者
 func TestRabbitMqPublishSubscribeConsumer(t *testing.T) {
 
 	consumer, err := publish_subscribe.CreateConsumer()
@@ -147,7 +137,6 @@ func TestRabbitMqPublishSubscribeConsumer(t *testing.T) {
 	})
 }
 
-// Routing 路由模式
 func TestRabbitMqRoutingProducer(t *testing.T) {
 
 	producer, err := routing.CreateProducer()
@@ -160,20 +149,17 @@ func TestRabbitMqRoutingProducer(t *testing.T) {
 	var key string
 	for i := 1; i <= 20; i++ {
 
-		//  将 偶数 和  奇数 分发到不同的key，消费者端，启动两个也各自处理偶数和奇数
 		if i%2 == 0 {
-			key = "key_even" //  偶数键
+			key = "key_even"
 		} else {
-			key = "key_odd" //  奇数键
+			key = "key_odd"
 		}
 
-		//strData := fmt.Sprintf("%d_Routing_%s, 开始发送消息测试"+time.Now().Format("2006-01-02 15:04:05"), i, key)
-		// 参数三： 消息延迟的毫秒数，只有创建的对象是延迟模式该参数才有效
 		res = producer.Send(key, strconv.Itoa(i)+"- Routing开始发送消息测试", 10000)
-		//time.Sleep(time.Second * 1)
+
 	}
 
-	producer.Close() // 消息投递结束，必须关闭连接
+	producer.Close()
 
 	if res {
 		t.Logf("消息发送OK")
@@ -182,7 +168,6 @@ func TestRabbitMqRoutingProducer(t *testing.T) {
 	}
 }
 
-// 消费者
 func TestRabbitMqRoutingConsumer(t *testing.T) {
 	consumer, err := routing.CreateConsumer()
 
@@ -194,14 +179,13 @@ func TestRabbitMqRoutingConsumer(t *testing.T) {
 	consumer.OnConnectionError(func(err *amqp.Error) {
 		t.Errorf("%s， %s\n", my_errors.ErrorsRabbitMqReconnectFail, err.Error())
 	})
-	// 通过route_key 匹配指定队列的消息来处理
+
 	consumer.Received("key_even", func(receivedData string) {
 		fmt.Println("处理偶数的回调函数 ---> 收到消息内容: " + receivedData)
-		//	t.Logf("处理偶数的回调函数：--->收到消息时间：%s - 消息内容：%s\n", time.Now().Format("2006-01-02 15:04:05"), receivedData)
+
 	})
 }
 
-// topics 模式
 func TestRabbitMqTopicsProducer(t *testing.T) {
 
 	producer, err := topics.CreateProducer()
@@ -213,29 +197,27 @@ func TestRabbitMqTopicsProducer(t *testing.T) {
 	var key string
 	for i := 1; i <= 10; i++ {
 
-		//  将 偶数 和  奇数 分发到不同的key，消费者端，启动两个也各自处理偶数和奇数
 		if i%2 == 0 {
-			key = "key.even" //  偶数键
+			key = "key.even"
 		} else {
-			key = "key.odd" //  奇数键
+			key = "key.odd"
 		}
 		strData := fmt.Sprintf("%d_Routing_%s, 开始发送消息测试", i, key)
-		// 参数三： 消息延迟的毫秒数，只有创建的对象是延迟模式该参数才有效
+
 		res = producer.Send(key, strData, 10000)
-		//time.Sleep(time.Second * 1)
+
 	}
 
-	producer.Close() // 消息投递结束，必须关闭连接
+	producer.Close()
 
 	if res {
 		t.Logf("消息发送OK")
 	} else {
 		t.Errorf("topics 模式消息发送失败")
 	}
-	//Output: 消息发送OK
+
 }
 
-// 消费者
 func TestRabbitMqTopicsConsumer(t *testing.T) {
 	consumer, err := topics.CreateConsumer()
 
@@ -247,7 +229,7 @@ func TestRabbitMqTopicsConsumer(t *testing.T) {
 	consumer.OnConnectionError(func(err *amqp.Error) {
 		t.Errorf("%s， %s\n", my_errors.ErrorsRabbitMqReconnectFail, err.Error())
 	})
-	// 通过route_key 模糊匹配队列路由键的消息来处理
+
 	consumer.Received("#.odd", func(receivedData string) {
 
 		t.Logf("模糊匹配偶数键：--->%s\n", receivedData)

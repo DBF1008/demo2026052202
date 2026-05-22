@@ -1,7 +1,7 @@
 package my_errors
 
 const (
-	//系统部分
+
 	ErrorsContainerKeyAlreadyExists string = "该键已经注册在容器中了"
 	ErrorsPublicNotExists           string = "public 目录不存在"
 	ErrorsConfigYamlNotExists       string = "config.yml 配置文件不存在"
@@ -23,29 +23,27 @@ const (
 	ErrorsGormInitFail             string = "Gorm 数据库驱动、连接初始化失败"
 	ErrorsCasbinNoAuthorization    string = "Casbin 鉴权未通过，请在后台检查 casbin 设置参数"
 	ErrorsGormNotInitGlobalPointer string = "%s 数据库全局变量指针没有初始化，请在配置文件 config/gorm_v2.yml 设置 Gormv2.%s.IsInitGlobalGormMysql = 1, 并且保证数据库配置正确 \n"
-	// 数据库部分
+
 	ErrorsDbDriverNotExists        string = "数据库驱动类型不存在,目前支持的数据库类型：mysql、sqlserver、postgresql，您提交数据库类型："
 	ErrorsDialectorDbInitFail      string = "gorm dialector 初始化失败,dbType:"
 	ErrorsGormDBCreateParamsNotPtr string = "gorm Create 函数的参数必须是一个指针"
 	ErrorsGormDBUpdateParamsNotPtr string = "gorm 的 Update、Save 函数的参数必须是一个指针(GinSkeleton ≥ v1.5.29 版本新增验证，为了完美支持 gorm 的所有回调函数,请在参数前面添加 & )"
-	//redis部分
+
 	ErrorsRedisInitConnFail string = "初始化redis连接池失败"
 	ErrorsRedisAuthFail     string = "Redis Auth 鉴权失败，密码错误"
 	ErrorsRedisGetConnFail  string = "Redis 从连接池获取一个连接失败，超过最大重试次数"
-	// 表单参数验证器未通过时的错误
+
 	ErrorsValidatorNotExists      string = "不存在的验证器"
 	ErrorsValidatorTransInitFail  string = "validator的翻译器初始化错误"
 	ErrorNotAllParamsIsBlank      string = "该接口不允许所有参数都为空,请按照接口要求提交必填参数"
 	ErrorsValidatorBindParamsFail string = "验证器绑定参数失败"
 
-	//token部分
 	ErrorsTokenInvalid      string = "无效的token"
 	ErrorsTokenNotActiveYet string = "token 尚未激活"
 	ErrorsTokenMalFormed    string = "token 格式不正确"
 
-	//snowflake
 	ErrorsSnowflakeGetIdFail string = "获取snowflake唯一ID过程发生错误"
-	// websocket
+
 	ErrorsWebsocketOnOpenFail                 string = "websocket onopen 发生阶段错误"
 	ErrorsWebsocketUpgradeFail                string = "websocket Upgrade 协议升级, 发生错误"
 	ErrorsWebsocketReadMessageFail            string = "websocket ReadPump(实时读取消息)协程出错"
@@ -55,14 +53,12 @@ const (
 	ErrorsWebsocketSetWriteDeadlineFail       string = "websocket  设置消息写入截止时间出错"
 	ErrorsWebsocketWriteMgsFail               string = "websocket  Write Msg(send msg) 失败"
 	ErrorsWebsocketStateInvalid               string = "websocket  state 状态已经不可用(掉线、卡死等愿意，造成双方无法进行数据交互)"
-	// rabbitMq
+
 	ErrorsRabbitMqReconnectFail string = "RabbitMq消费者端掉线后重连失败，超过尝试最大次数"
 
-	//文件上传
 	ErrorsFilesUploadOpenFail string = "打开文件失败，详情："
 	ErrorsFilesUploadReadFail string = "读取文件32字节失败，详情："
 
-	// casbin 初始化可能的错误
 	ErrorCasbinCanNotUseDbPtr         string = "casbin 的初始化基于gorm 初始化后的数据库连接指针，程序检测到 gorm 连接指针无效，请检查数据库配置！"
 	ErrorCasbinCreateAdaptFail        string = "casbin NewAdapterByDBUseTableName 发生错误："
 	ErrorCasbinCreateEnforcerFail     string = "casbin NewEnforcer 发生错误："
